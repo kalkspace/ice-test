@@ -89,6 +89,65 @@ $("#turn-form").submit((event) => {
   renderIceServers();
 });
 
+/** @type {(data: ArrayBuffer) => Promise<string>} */
+async function base64Encode(data) {
+  const base64url = await new Promise((r) => {
+    const reader = new FileReader();
+    reader.onload = () => r(reader.result);
+    reader.readAsDataURL(new Blob([data]));
+  });
+
+  /*
+    The result looks like
+    "data:application/octet-stream;base64,<your base64 data>",
+    so we split off the beginning:
+  */
+  return base64url.split(",", 2)[1];
+}
+
+/** @type {(data: string, secretKey: string) => Promise<string>} */
+async function generateHmac(data, secretKey) {
+  const encoder = new TextEncoder();
+  const cryptoKey = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secretKey),
+    { name: "HMAC", hash: "SHA-1" },
+    false,
+    ["sign"]
+  );
+  const payload = encoder.encode(data);
+  const signed = await crypto.subtle.sign({ name: "HMAC" }, cryptoKey, payload);
+  return base64Encode(signed);
+}
+
+$("#bbb-form").submit((event) => {
+  event.preventDefault();
+
+  const bbbTurn = $("#add-new-bbb").val();
+  const bbbSecretKey = $("#add-new-bbb-secret-key").val();
+
+  // long expiryTime = System.currentTimeMillis() / 1000 + ttl;
+  // String username = expiryTime + COLON + userId;
+  // String password = calculateRFC2104HMAC(username, secretKey);
+  // turn = new TurnEntry(username, password, ttl, url);
+
+  const expiryTime = Math.floor(Date.now() / 1000) + 300;
+  const username = `${expiryTime}:demo`;
+  generateHmac(username, bbbSecretKey).then((password) => {
+    let server = {
+      type: "turn",
+      isActive: true,
+      url: bbbTurn,
+      username: username,
+      credential: password,
+    };
+
+    addServer(server);
+    event.currentTarget.reset();
+    renderIceServers();
+  });
+});
+
 function addServer(server) {
   try {
     let localStorage = window.localStorage;

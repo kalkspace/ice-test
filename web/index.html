@@ -85,7 +85,7 @@
             </small>
           </form>
 
-          <form id="turn-form">
+          <form id="turn-form" class="mb-4">
             <div class="form-row align-items-center">
               <div class="col-sm-9">
                 <div class="input-group mb-2 mb-sm-0">
@@ -140,6 +140,51 @@
                 </div>
               </div>
 
+              <small id="turn-help" class="form-text text-muted">
+                TURN format is: stun:[...]?transport=...
+              </small>
+            </div>
+          </form>
+
+          <form id="bbb-form">
+            <div class="form-row align-items-center mb-3">
+              <div class="col-sm-9">
+                <div class="input-group mb-2 mb-sm-0">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">BBB</span>
+                  </div>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="add-new-bbb"
+                    aria-describedby="turn-help"
+                    placeholder="turn:localhost:3478"
+                    value="turn:bbb.kalk.space:3478"
+                    required
+                  />
+                </div>
+              </div>
+              <div class="col-sm-3 align-self-start">
+                <button type="submit" class="btn btn-outline-primary btn-block">
+                  Add BBB
+                </button>
+              </div>
+            </div>
+            <div class="form-row align-items-center">
+              <div class="col-sm-6">
+                <div class="input-group mb-2 mb-sm-0">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">Secret Key</span>
+                  </div>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="add-new-bbb-secret-key"
+                    placeholder="demo"
+                    required
+                  />
+                </div>
+              </div>
               <small id="turn-help" class="form-text text-muted">
                 TURN format is: stun:[...]?transport=...
               </small>
